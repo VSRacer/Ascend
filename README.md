@@ -1378,3 +1378,15 @@
         在ModelArts操作页面进入开发环境 > Notebook > 创建，创建新的Notebook环境并启动，待启动完成进入Notebook开启TensorFlow开发环境，可以在该环境下使用Jupyter Notebook对脚本进行调试。
     ![启动Notebook](./img/%E5%90%AF%E5%8A%A8Notebook.png)
     ![开启TensorFlow环境](./img/%E5%BC%80%E5%90%AFTensorFlow%E7%8E%AF%E5%A2%83.png)
+-   #### <h4 id = "上传数据和脚本">上传数据和脚本</h4>
+    -   返回ModelArts-用户控制台，进入对象存储控制台，下载obs软件并获取AK、SK。
+    ![返回ModelArts控制台](./img/%E8%BF%94%E5%9B%9EModelArts%E6%8E%A7%E5%88%B6%E5%8F%B0.png)
+    ![下载obs获取AK、SK](./img/%E4%B8%8B%E8%BD%BDobs.png)
+    -   登录obs-browser-plus，服务器地址：武汉局点`58.48.42.196:443`。
+    ![登录obs](./img/%E7%99%BB%E5%BD%95OBS.png)
+    -   创建obs桶，桶名称任意，区域：`cn-central-221`。
+    ![创建obs桶](./img/%E5%88%9B%E5%BB%BAobs%E6%A1%B6.png)
+    -   上传数据和脚本文件，可以用以下格式存储数据和脚本等。
+    ![上传数据和脚本](./img/%E4%B8%8A%E4%BC%A0%E6%95%B0%E6%8D%AE%E5%92%8C%E8%84%9A%E6%9C%AC.png)
+    （**如果在Notebook中进行训练需要对文件进行打包，如下所示**）
+    ![打包上传](./img/%E6%96%87%E4%BB%B6%E6%89%93%E5%8C%85.png)
