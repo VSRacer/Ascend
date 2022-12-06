@@ -1304,3 +1304,60 @@
     echo "E2ETrainingTime = ${e2e_time}" >> $cur_path/output/$ASCEND_DEVICE_ID/${CaseName}.log
     </code></pre>
     </details>
+## <h2 id = "模型训练">模型训练</h2>
+### <h3 id = "单Device训练">单Device训练</h3>
+基于样例网络模型CRNN_TensorFlow训练脚本，在裸机环境进行单Device训练。**需要提前进行模型迁移工作**。
+-   #### <h4 id = "环境准备">环境准备</h4>
+    -   准备好一个可用的昇腾AI处理器的裸机环境。环境搭建参考《[CANN软件安装指南](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/600alpha001/softwareinstall/instg/atlasdeploy_03_0002.html)》。
+    -   准备好完成迁移的TensorFlow训练脚本和所需数据集。
+    -   （可选）如果原始训练脚本中使用了hvd接口或tf.data.Dataset对象的shard接口，在单Device上执行训练前必须准备单Device的资源信息配置文件。单Device的资源信息配置文件中需包含一个Device资源，文件名举例：rank_table_1p.json，配置文件举例：
+        ```
+        {
+            "server_count":"1", 
+            "server_list":
+            [
+            {
+                    "device":[ 
+                                {
+                                    "device_id":"0", 
+                                    "device_ip":"192.168.1.8", 
+                                    "rank_id":"0" 
+                                    }
+                            ],
+                    "server_id":"10.0.0.10"
+                }
+            ],
+            "status":"completed", 
+            "version":"1.0"
+        }
+        ```
+        配置文件的详细介绍请参考[准备昇腾AI处理器资源配置文件](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/600alpha001/moddevg/tfmigr1/atlasmprtg_13_0019.html)。
+-   #### <h4 id = "执行训练">执行训练</h4>
+    -   配置环境变量
+        ```
+        # 请依据实际在下列场景中选择一个训练依赖包安装路径的环境变量设置（以HwHiAiUser安装用户为例）。
+        # 场景一：昇腾设备安装部署开发套件包Ascend-cann-toolkit(此时开发环境可进行训练任务)。
+        . /home/HwHiAiUser/Ascend/ascend-toolkit/set_env.sh 
+        # 场景二：昇腾设备安装部署软件包Ascend-cann-nnae。
+        . /home/HwHiAiUser/Ascend/nnae/set_env.sh 
+
+        # tfplugin包依赖。
+        . /home/HwHiAiUser/Ascend/tfplugin/set_env.sh
+
+        # 若运行环境中存在多个python3版本时，需要在环境变量中配置python的安装路径。如下配置以安装python3.7.5为例，可根据实际修改。
+        export PATH=/usr/local/python3.7.5/bin:$PATH
+        export LD_LIBRARY_PATH=/usr/local/python3.7.5/lib:$LD_LIBRARY_PATH
+
+        # 当前脚本所在路径，例如：
+        export PYTHONPATH="$PYTHONPATH:/root/models"
+
+        export JOB_ID=10086        # 训练任务ID，用户自定义，仅支持大小写字母，数字，中划线，下划线。不建议使用以0开始的纯数字
+        export ASCEND_DEVICE_ID=0  # 指定昇腾AI处理器的逻辑ID，单P训练也可不配置，默认为0，在0卡执行训练
+        export RANK_ID=0           # 指定训练进程在集合通信进程组中对应的rank标识序号，单P训练固定配置为0
+        export RANK_SIZE=1         # 指定当前训练进程对应的Device在本集群大小，单P训练固定配置为1
+        export RANK_TABLE_FILE=/root/rank_table_1p.json # 如果用户原始训练脚本中使用了hvd接口或tf.data.Dataset对象的shard接口，需要配置，否则无需配置。
+        ```
+    -   执行训练脚本，开始训练进程，例如：
+        ```
+        python3 tools/train_npu.py --dataset_dir=./data/
+        ```
