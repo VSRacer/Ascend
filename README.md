@@ -1067,3 +1067,88 @@
            <summary  style=font-weight:bold>GPU训练复现（可选）</summary>
            在昇腾AI处理器进行模型迁移之前，建议用户事先准备好基于TensorFlow 1.15>开发的训练模型以及配套的数据集，并要求在GPU或CPU上跑通，精度收敛，且达到预期精度和性能要求。同时记录相关精度和性能指标，用于后续在昇腾AI处理器进行精度和性能对比。
            </details>    
+-   #### <h4 id = "迁移操作步骤">迁移操作步骤</h4>
+    -   安装依赖
+    
+        ```
+        pip3 install pandas
+        pip3 install xlrd==1.2.0
+        pip3 install openpyxl
+        pip3 install tkintertable
+        pip3 install google_pasta
+        ```
+    
+    -   训练脚本扫描和自动迁移。
+    
+        该工具支持在Linux或Windows环境进行脚本迁移。
+        -   Linux环境操作步骤
+    
+            进入迁移工具所在目录，例如“tfplugin安装目录/tfplugin/latest/python/site-packages/npu_bridge/convert_tf2npu/”，执行命令可同时完成脚本扫描和自动迁移，例如：
+    
+            ```    
+            python3 main.py -i /root/models/official/CRNN_Tensorflow
+            ```
+            参数说明：
+            | 参数名 | 必选/可选 | 参数说明  |
+            | ----- | --------- | -------- |
+            | -i    | 必选      | 被迁移脚本路径文件夹，仅支持单个文件夹     |
+            | -o    | 可选      | 迁移后脚本输出路径，不可设置原始脚本子的目录，默认在当前路径下    |
+            | -r    | 可选      | 迁移报告输出路径，不可设置原始脚本子的目录，默认在当前路径下    |
+            | -m    | 可选      | Python入口文件路径     |
+            | -d    | 分布式必选 | 如果原始脚本支持分布式训练，需要指定原始脚本使用的分布式策略，便于工具对分布式脚本进行自动迁移。取值：<br>**tf_strategy**：表示原始脚本使用tf.distribute.Strategy分布式策略<br>**horovod**：表示原始脚本使用horovod分布式策略目前session run分布式脚本无法彻底进行自动迁移，如需支持请参考[Session run脚本支持分布式训练](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/600alpha001/moddevg/tfmigr1/atlasmprtgtool_13_0013.html)。|
+            | -h    | 可选      | 迁移工具使用帮助。例如：`python3 main.py -h`     |
+        -   Windows环境操作步骤
+
+            启动工具：
+               
+            ```    
+            python3 main_win.py
+            ```
+
+            在弹出的窗口根据界面提示进行操作：
+
+            1. 根据界面提示设置相关输入。
+            
+            2. 点击“开始分析”，能看到分析结果，并在指定的路径下生成迁移后的脚本，在指定的“输出分析报告路径”下生成分析报告。
+
+            3. 点击“重新开始分析”，则返回选择路径窗口，可以重新指定输入脚本，再次分析。
+
+            4. 点击“退出”，则退出Tensorflow 1.15网络迁移工具。
+    -   迁移过程中，打印如下信息，表明正在扫描相关文件进行脚本迁移，输出日志如下所示：
+        ```
+        Begin conver file: D:/work/model/CRNN_TensorFlow/crnn_model/crnn_net.py
+        Finish conver file: D:/work/model/CRNN_TensorFlow/crnn_model/crnn_net.py
+
+        Begin conver file: D:/work/model/CRNN_TensorFlow/crnn_model/cnn_basenet.py
+        Finish conver file: D:/work/model/CRNN_TensorFlow/crnn_model/cnn_basenet.py
+        ```
+    -   迁移结束后，生成迁移后的脚本，以及迁移报告，输出日志如下所示：
+        ```
+        Finish conver,output file: D:/Work/20221108/output/; report file: D://Work/20221108/report_npu_20221108161765
+        ```
+## <h2 id = "训练参数配置">训练参数配置</h2>
+-   在整体目录下创建rank table file文件目录configs，例如：`/CRNN_TensorFlow/configs/`，创建`rank_table_8p.json`存放在该目录下，`rank_table_8p.json`内容如下所示：
+    ```
+    {
+        "group_count": "1",
+        "group_list": [
+        {
+            "group_name": "worker",
+            "device_count": "8",
+            "instance_count": "1",
+            "instance_list": [{"devices":
+                            [{"device_id":"0","device_ip":"192.168.100.101"},
+                                {"device_id":"1","device_ip":"192.168.101.101"},
+                                {"device_id":"2","device_ip":"192.168.102.101"},
+                                {"device_id":"3","device_ip":"192.168.103.101"},
+                                {"device_id":"4","device_ip":"192.168.100.100"},
+                                {"device_id":"5","device_ip":"192.168.101.100"},
+                                {"device_id":"6","device_ip":"192.168.102.100"},
+                                {"device_id":"7","device_ip":"192.168.103.100"}],
+                "pod_name":"npu8p",
+                "server_id":"127.0.0.1"}]
+        }
+        ],
+        "status": "completed"
+    }
+    ```
