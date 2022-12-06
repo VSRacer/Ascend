@@ -1361,3 +1361,20 @@
         ```
         python3 tools/train_npu.py --dataset_dir=./data/
         ```
+### <h3 id = "计算中心上训练">计算中心上训练</h3>
+-   #### <h4 id = "上传镜像">上传镜像</h4>
+    -   登录[计算中心](https://login.ovaijisuan.com/auth/realms/userconsole/protocol/openid-connect/auth?client_id=rightcloud-bss&redirect_uri=https%3A%2F%2Fuconsole.ovaijisuan.com%2F%23%2F&state=ee70fa6c-2e0e-48a6-8bea-f5ac8244a4af&response_mode=fragment&response_type=code&scope=openid&nonce=6383b05d-2336-4d34-91e7-0aadd4f2e933) > 云资源 > ModelArts > ModelArts控制台，在HCS Online中进入应用服务 > 容器镜像服务SWR中管理自定义镜像。
+    ![登录计算中心](./img/%E7%99%BB%E5%BD%95%E8%AE%A1%E7%AE%97%E4%B8%AD%E5%BF%83.png)
+    ![ModelArts控制台](./img/ModelArts%E6%8E%A7%E5%88%B6%E5%8F%B0.png)
+    ![容器镜像服务SWR](./img/%E5%AE%B9%E5%99%A8%E9%95%9C%E5%83%8F%E6%9C%8D%E5%8A%A1SWR.png)
+    ![上传镜像](./img/%E4%B8%8A%E4%BC%A0%E9%95%9C%E5%83%8F.png)
+    -   如果需要更新镜像，在组织管理中创建组织并进入，选择镜像选项卡按照Pull/Push指南进行镜像更新操作。
+    ![Pull/Push指南](./img/PullPush%E6%8C%87%E5%8D%97.png)
+    -   注册镜像
+        在ModelArts操作页面进入镜像管理 > 注册镜像 > 查看可选镜像源，选择已经上传的自定义镜像，类型选择ASCEND，进行镜像注册。
+    ![返回ModelArts操作页面](./img/%E8%BF%94%E5%9B%9EModelArts%E6%93%8D%E4%BD%9C%E9%A1%B5%E9%9D%A2.png)
+    ![注册镜像](./img/%E6%B3%A8%E5%86%8C%E9%95%9C%E5%83%8F.png)
+    -   启动Notebook
+        在ModelArts操作页面进入开发环境 > Notebook > 创建，创建新的Notebook环境并启动，待启动完成进入Notebook开启TensorFlow开发环境，可以在该环境下使用Jupyter Notebook对脚本进行调试。
+    ![启动Notebook](./img/%E5%90%AF%E5%8A%A8Notebook.png)
+    ![开启TensorFlow环境](./img/%E5%BC%80%E5%90%AFTensorFlow%E7%8E%AF%E5%A2%83.png)
