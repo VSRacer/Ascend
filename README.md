@@ -1032,3 +1032,38 @@
             )
     </code></pre>
     </details>
+### <h3 id = "工具迁移">工具迁移</h3>
+-   #### <h4 id = "功能介绍">功能介绍</h4>
+       Ascend平台提供了Tensorflow 1.15网络迁移工具，该工具适用于原生的Tensorflow训练脚本迁移场景，AI算法工程师通过该工具分析原生的TensorFlow Python API和Horovod Python API在昇腾AI处理器上的支持度情况，同时将原生的TensorFlow训练脚本自动迁移成昇腾AI处理器支持的脚本。对于无法自动迁移的API，您可以参考工具输出的迁移报告，对训练脚本进行相应的适配修改。
+-   #### <h4 id = "获取路径">获取路径</h4>
+    a. 已安装CANN软件包  
+    -   CANN软件安装完成后，迁移工具在“tfplugin安装目录/tfplugin/latest/python/site-packages/npu_bridge/convert_tf2npu/”目录下。
+      
+    b. 未安装CANN软件包  
+    -   从[昇腾社区](https://gitee.com/ascend/tensorflow/tree/master/convert_tf2npu)获取，直接下载convert_tf2npu文件夹到Linux或Windows环境上任意目录即可。
+-   #### <h4 id = "使用限制">使用限制</h4>
+
+    在使用工具进行模型迁移前，先来了解对原始训练脚本的限制：
+    
+    -   要求原始脚本在GPU/CPU上跑通，精度收敛。
+    
+    -   要求原始脚本仅使用TensorFlow 1.15官方API和Horovod官方API。若用户脚本使用了其他第三方API，当前工具暂不支持迁移。例如：
+    
+           1. 不支持原生Keras API，但由于Tensorflow官方API中包括了Tensorflow的Keras API，因此支持Tensorflow的Keras API。
+    
+           2. 不支持CuPy API，即便原始脚本能在GPU上运行成功，但不能保证在昇腾AI处理器运行成功。
+    -   原始脚本中的TensorFlow模块和Horovod模块最好按照如下方式引用，否则工具迁移后，无法生成准确的迁移报告（但并不影响脚本迁移）。
+    
+           ```
+           import tensorflow as tf
+           import tensorflow.compat.v1 as tf
+           import horovod.tensorflow as hvd
+           ```
+    
+    -   当前版本不支持float64/complex64/complex128/DT_VARIANT数据类型。
+    -   当前不支持tf.keras和原生Keras的Loss Scale功能迁移。
+    -   当前不支持动态shape网络迁移。
+           <details> 
+           <summary  style=font-weight:bold>GPU训练复现（可选）</summary>
+           在昇腾AI处理器进行模型迁移之前，建议用户事先准备好基于TensorFlow 1.15>开发的训练模型以及配套的数据集，并要求在GPU或CPU上跑通，精度收敛，且达到预期精度和性能要求。同时记录相关精度和性能指标，用于后续在昇腾AI处理器进行精度和性能对比。
+           </details>    
